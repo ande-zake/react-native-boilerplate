@@ -1,15 +1,15 @@
-import React from 'react';
+import React, {memo} from 'react';
 import {
   StyleSheet,
   View,
   ActivityIndicator
 } from 'react-native';
 
-const CenterSpinner = () => (
+const CenterSpinner = memo(() => (
   <View style={styles.container}>
     <ActivityIndicator />
   </View>
-)
+))
 
 const styles = StyleSheet.create({
   container: {

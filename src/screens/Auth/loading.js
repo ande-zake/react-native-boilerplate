@@ -1,23 +1,39 @@
-import React, {memo} from 'react';
-import {
-  StyleSheet,
-  View,
-  ActivityIndicator
-} from 'react-native';
+import React from 'react';
+import { View } from 'react-native';
+import CenterSpinner from '../../components/centerspin';
+import { setLogout } from '../authActions';
+import { loadString } from '../../utils/storage';
 
-const CenterSpinner = memo(() => (
-  <View style={styles.container}>
-    <ActivityIndicator />
-  </View>
-))
+const AuthLoadingScreen = ({ navigation }) =>  {
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  }
-});
+  // auth init function
+  const _bootstrapAsync = async () => {
+    // Fetch token from storage
+    const session = await loadString('@gdtwarga:session');
+    // If session exists, validate it, else redirect to login screen
+    if (session) {
+      const sessionObj = JSON.parse(session);
+      var currentTime = Math.floor(new Date().getTime() / 1000);
+      if (currentTime < sessionObj.exp) {
+        setLogout(() => navigation.navigate('Auth'));
+        navigation.navigate('Main');
+      } else {
+        navigation.navigate('Auth');
+      }
+    } else {
+      navigation.navigate('Auth');
+    }
+  };
 
+  React.useEffect(() => {
+    _bootstrapAsync();
+  }, []);
 
-export default CenterSpinner;
+  return (
+    <View>
+      <CenterSpinner />
+    </View>
+  );
+}
+
+export default AuthLoadingScreen;
